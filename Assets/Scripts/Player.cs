@@ -1,7 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     public GameObject laserPrefab;
@@ -11,22 +11,46 @@ public class Player : MonoBehaviour
     private float verticalScreenLimit = 6f;
     private bool canShoot = true;
 
-    // Start is called before the first frame update
-    void Start()
+    private PlayerMovement controls;    
+    private Vector2 moveInput;          
+
+    void Awake()
     {
-        
+        controls = new PlayerMovement();
     }
 
-    // Update is called once per frame
+    void OnEnable()
+    {
+        controls.Enable();
+
+        // movement input
+        controls.Gameplay.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+        controls.Gameplay.Move.canceled += ctx => moveInput = Vector2.zero;
+
+        // shooting input
+        controls.Gameplay.Shoot.performed += OnShoot;
+    }
+
+    void OnDisable()
+    {
+        controls.Gameplay.Move.performed -= ctx => moveInput = ctx.ReadValue<Vector2>();
+        controls.Gameplay.Move.canceled -= ctx => moveInput = Vector2.zero;
+        controls.Gameplay.Shoot.performed -= OnShoot;
+
+        controls.Disable();
+    }
+
     void Update()
     {
         Movement();
-        Shooting();
     }
 
     void Movement()
     {
-        transform.Translate(new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0) * Time.deltaTime * speed);
+        // apply movement
+        transform.Translate(new Vector3(moveInput.x, moveInput.y, 0) * Time.deltaTime * speed);
+
+        // screen wrap
         if (transform.position.x > horizontalScreenLimit || transform.position.x <= -horizontalScreenLimit)
         {
             transform.position = new Vector3(transform.position.x * -1f, transform.position.y, 0);
@@ -37,13 +61,13 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Shooting()
+    private void OnShoot(InputAction.CallbackContext context)
     {
-        if (Input.GetKeyDown(KeyCode.Space) && canShoot)
+        if (canShoot)
         {
             Instantiate(laserPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity);
             canShoot = false;
-            StartCoroutine("Cooldown");
+            StartCoroutine(Cooldown());
         }
     }
 
