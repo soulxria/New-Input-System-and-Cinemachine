@@ -12,7 +12,10 @@ public class Player : MonoBehaviour
     private bool canShoot = true;
 
     private PlayerMovement controls;    
-    private Vector2 moveInput;          
+    private Vector2 moveInput;
+
+    [SerializeField] private float worldXLimit = 20f;
+    [SerializeField] private float worldYLimit = 12f;
 
     void Awake()
     {
@@ -47,18 +50,19 @@ public class Player : MonoBehaviour
 
     void Movement()
     {
-        // apply movement
         transform.Translate(new Vector3(moveInput.x, moveInput.y, 0) * Time.deltaTime * speed);
 
-        // screen wrap
-        if (transform.position.x > horizontalScreenLimit || transform.position.x <= -horizontalScreenLimit)
-        {
-            transform.position = new Vector3(transform.position.x * -1f, transform.position.y, 0);
-        }
-        if (transform.position.y > verticalScreenLimit || transform.position.y <= -verticalScreenLimit)
-        {
-            transform.position = new Vector3(transform.position.x, transform.position.y * -1, 0);
-        }
+        if (transform.position.x > worldXLimit)
+            transform.position = new Vector3(-worldXLimit, transform.position.y, 0);
+
+        if (transform.position.x < -worldXLimit)
+            transform.position = new Vector3(worldXLimit, transform.position.y, 0);
+
+        if (transform.position.y > worldYLimit)
+            transform.position = new Vector3(transform.position.x, -worldYLimit, 0);
+
+        if (transform.position.y < -worldYLimit)
+            transform.position = new Vector3(transform.position.x, worldYLimit, 0);
     }
 
     private void OnShoot(InputAction.CallbackContext context)
