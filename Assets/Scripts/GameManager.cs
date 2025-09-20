@@ -7,11 +7,7 @@ using UnityEngine.InputSystem;
 public class GameManager : MonoBehaviour
 {
     public GameObject playerPrefab;
-    public GameObject meteorPrefab;
-    public GameObject bigMeteorPrefab;
     public bool gameOver = false;
-
-    public int meteorCount = 0;
 
     private PlayerMovement controls; 
 
@@ -35,22 +31,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         Instantiate(playerPrefab, transform.position, Quaternion.identity);
-        InvokeRepeating("SpawnMeteor", 1f, 2f);
     }
-
-    void Update()
-    {
-        if (gameOver)
-        {
-            CancelInvoke();
-        }
-
-        if (meteorCount == 5)
-        {
-            BigMeteor();
-        }
-    }
-
     
     private void OnRestart(InputAction.CallbackContext context)
     {
@@ -58,19 +39,5 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene("Week5Lab");
         }
-    }
-
-    void SpawnMeteor()
-    {
-        Instantiate(meteorPrefab, new Vector3(Random.Range(-8, 8), 7.5f, 0), Quaternion.identity);
-    }
-
-    [System.Obsolete]
-    void BigMeteor()
-    {
-        meteorCount = 0;
-        Instantiate(bigMeteorPrefab, new Vector3(Random.Range(-8, 8), 7.5f, 0), Quaternion.identity);
-        // Notify the camera script
-        FindObjectOfType<BigMeteorCameraZoom>().OnBigMeteorSpawned();
     }
 }

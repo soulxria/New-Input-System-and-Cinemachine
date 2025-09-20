@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IMovable
 {
     public GameObject laserPrefab;
 
@@ -48,7 +48,7 @@ public class Player : MonoBehaviour
         Movement();
     }
 
-    void Movement()
+    public void Movement()
     {
         transform.Translate(new Vector3(moveInput.x, moveInput.y, 0) * Time.deltaTime * speed);
 

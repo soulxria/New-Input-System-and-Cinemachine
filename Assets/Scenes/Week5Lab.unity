@@ -488,6 +488,7 @@ GameObject:
   m_Component:
   - component: {fileID: 998771953}
   - component: {fileID: 998771952}
+  - component: {fileID: 998771954}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -508,10 +509,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 7158442464957206486, guid: 78da5bc7391e681469a6daeeda50dc41, type: 3}
-  meteorPrefab: {fileID: 5841098876348517303, guid: 6d66530d7aa7838409a2fd8d5bf6a0a4, type: 3}
-  bigMeteorPrefab: {fileID: 5841098876348517303, guid: d601771a08acde745ae7ef51fc2d67b8, type: 3}
   gameOver: 0
-  meteorCount: 0
 --- !u!4 &998771953
 Transform:
   m_ObjectHideFlags: 0
@@ -527,6 +525,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &998771954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998771951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e74652dccc6fbf343920f80497d4ea2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeteorSpawner
+  meteorPrefab: {fileID: 5841098876348517303, guid: 6d66530d7aa7838409a2fd8d5bf6a0a4, type: 3}
+  bigMeteorPrefab: {fileID: 5841098876348517303, guid: d601771a08acde745ae7ef51fc2d67b8, type: 3}
+  meteorCount: 0
 --- !u!1 &1186552377
 GameObject:
   m_ObjectHideFlags: 0

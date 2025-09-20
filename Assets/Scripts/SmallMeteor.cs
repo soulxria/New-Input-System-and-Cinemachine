@@ -1,28 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class BigMeteor : Meteor, ICollisionHandler
+public class SmallMeteor : Meteor, ICollisionHandler
 {
-    private int hitCount = 0;
-
-    // Handles collision of big meteor
     public void HandleCollision(Collider2D whatIHit)
     {
         if (whatIHit.tag == "Player")
         {
+            Debug.Log("Destroyed Player");
             GameObject.Find("GameManager").GetComponent<GameManager>().gameOver = true;
             Destroy(whatIHit.gameObject);
+            Destroy(this.gameObject);
         }
         else if (whatIHit.tag == "Laser")
         {
-            hitCount++;
+            GameObject.Find("GameManager").GetComponent<MeteorSpawner>().meteorCount++;
             Destroy(whatIHit.gameObject);
-
-            if (hitCount >= 5) // Big meteor requires 5 hits to destroy
-            {
-                Destroy(this.gameObject);
-            }
+            Destroy(this.gameObject);
         }
     }
 
