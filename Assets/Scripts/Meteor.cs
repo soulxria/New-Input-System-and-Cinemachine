@@ -28,14 +28,25 @@ public abstract class Meteor : MonoBehaviour, IMovable
     bool randomBool;
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        smoothDir = transform.up; // start pointing "up"
+        smoothDir = transform.up;
         angleTracker = dotProd;
         baseSpeed = Random.Range(2f, 4f);
         orbitFactor = Random.Range(.7f, 1f);
         randomBool = Random.Range(0, 2) == 0;
+
+        FindPlayer();
+    }
+
+    private void FindPlayer()
+    {
+        if (player == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) player = p.transform;
+        }
     }
 
     // Update is called once per frame
@@ -46,7 +57,23 @@ public abstract class Meteor : MonoBehaviour, IMovable
 
     public void Movement()
     {
-        Vector2 toPlayer = (player.position - transform.position);
+        // Safety check for rb component
+        if (rb == null)
+        {
+            Debug.LogError("Rigidbody2D component is null! Make sure Start() method is called properly.");
+            return;
+        }
+
+        // Get a local reference to avoid race conditions
+        Transform currentPlayer = player;
+        if (currentPlayer == null)
+        {
+            FindPlayer();
+            currentPlayer = player;
+            if (currentPlayer == null) return; // Exit if player still not found
+        }
+
+        Vector2 toPlayer = (currentPlayer.position - transform.position);
         distance = toPlayer.magnitude;
         Vector2 toPlayerNormalized = toPlayer.normalized;
 
@@ -65,7 +92,7 @@ public abstract class Meteor : MonoBehaviour, IMovable
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, avoidanceRadius);
             foreach (Collider2D h in hits)
             {
-                if (h != null && h.gameObject != gameObject)
+                if (h != null && h.gameObject != gameObject && h.transform != null)
                 {
                     Vector2 away = (transform.position - h.transform.position).normalized;
                     moveDir += away * avoidanceStrength;
@@ -83,8 +110,11 @@ public abstract class Meteor : MonoBehaviour, IMovable
         Vector2 newPos = rb.position + smoothDir * speed * Time.fixedDeltaTime;
         rb.MovePosition(newPos);
 
+        // Double-check player still exists before rotation calculations
+        if (currentPlayer == null) return;
+
         //draw dot product btwn vector of player up and the vector from enemy to player
-        dotProd = Vector2.Dot((this.transform.position - player.position).normalized, player.up);
+        dotProd = Vector2.Dot((transform.position - currentPlayer.position).normalized, currentPlayer.up);
         angleMade = Mathf.Acos(dotProd); //get the angle
         angleMadeDegrees = angleMade * Mathf.Rad2Deg; //convert to degree
 
